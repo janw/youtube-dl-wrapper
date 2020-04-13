@@ -1,6 +1,7 @@
 import fcntl
 import os
-import sys
+
+# Taken and modified from https://stackoverflow.com/a/384493
 
 
 def instance_running(label="default"):
@@ -15,12 +16,10 @@ def instance_running(label="default"):
     released if the file pointer were closed.
     """
 
-    lock_file_pointer = os.open(f"/tmp/instance_{label}.lock", os.O_WRONLY | os.O_CREAT)
+    lock_fp = os.open(f"/tmp/instance_{label}.lock", os.O_WRONLY | os.O_CREAT)
 
     try:
-        fcntl.lockf(lock_file_pointer, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        already_running = False
+        fcntl.lockf(lock_fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return False
     except IOError:
-        already_running = True
-
-    return already_running
+        return True
