@@ -1,0 +1,21 @@
+ydl_args:
+  # In the docker_container paths are relative to the /downloads volume
+  download_archive: "archive.log"
+  outtmpl: "%(channel)s/%(release_date)s - %(title)s - %(id)s.%(ext)s"
+
+  ignore_errors: true
+  write_info_json: true
+  format: "(bestvideo[height<=?1080]+bestaudio/best)"
+  merge_output_format: mkv
+  writethumbnail: true
+  writeinfojson: true
+
+links:
+  - name: Custom item title
+    urls: "https://www.youtube.com/watch?v=BaW_jenozKc"
+
+  - name: Item with urls as list
+    urls:
+      - "https://www.youtube.com/watch?v=BaW_jenozKc"
+
+  - "https://www.youtube.com/watch?v=BaW_jenozKc"

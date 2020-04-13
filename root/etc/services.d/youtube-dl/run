@@ -1,0 +1,30 @@
+#!/usr/bin/with-contenv bash
+set -euo pipefail
+IFS=$'\n\t'
+
+UMASK_SET=${UMASK_SET:-022}
+SCHEDULE=${SCHEDULE:-'* * * * *'}
+
+umask "$UMASK_SET"
+
+test -r /config/config.yaml || (echo "/config/config.yaml must exist and contain the wrapper config" && exit 1)
+test -w "/downloads" || echo "/downloads is not writable, please fix its ownership and/or permissions"
+
+echo '
+-------------------------------------
+Application setup
+-------------------------------------'
+echo "
+Youtube-dl version:   $(youtube-dl --version)
+Python version:       $(python3 --version 2>&1 | cut -d " " -f 2)
+FFMPEG version:       $(ffmpeg -version | head -n 1 | cut -d' ' -f3)
+Cron schedule:        ${SCHEDULE}
+-------------------------------------
+"
+
+echo -e "${SCHEDULE} bash /entrypoint.sh" > /etc/crontabs/abc
+
+# Run first download job right away
+su-exec abc bash /entrypoint.sh &
+
+exec crond -f -d 8
